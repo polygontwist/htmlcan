@@ -1,4 +1,4 @@
-# htmlcan
+# htmlcan (html to canvas)
 HTML-Knoten auf canvas für WebGL-Textur rendern
 
 Beispiel oben Canvas unten HTML:
