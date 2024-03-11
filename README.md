@@ -9,6 +9,6 @@ Im Prinzip hole ich mir die Position, Größe, Hintergrundfarbe, Textfarbe+Font,
 
 Klassische input-Elemente werden auch gezeichnet. Es findet aber keine Interaktion mit diesen statt. Dies müßte ergänzt werden.
 
-BEim genauen Hinschaun ist es noch nicht perfekt, z.B. wenn fetter Text in normalen Text steht. Für einen Anfang sollte es genügen.
+Beim genauen Hinschaun ist es noch nicht perfekt, z.B. wenn fetter Text in normalen Text steht. Für einen Anfang sollte es genügen.
 
 Das ganze funktioniert nur wenn es von einem Server kommt.
