@@ -25,6 +25,7 @@ Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktion
 
 ## Änderungen in Version 2
 - Code-Optimierung
+- Unterstützung für Textausrichtung mit `text-align:`
 - Unterstützung für `padding`
 - Unterstützung für Elemente mit `:before`, z. B. Font-Icons
 
