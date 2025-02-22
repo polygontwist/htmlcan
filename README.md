@@ -3,7 +3,7 @@
 HTML-Knoten auf canva-Element rendern, z. B. für WebGL-Texturen.
 
 ## Vorschau
-Beispiel: Oben Canvas, unten HTML
+Beispiel: oben auf graues canva-Element gerendert, darunter das HTML
 
 ![Vergleich Canvas vs. HTML](https://github.com/polygontwist/htmlcan/blob/main/screenshot.png)
 
@@ -20,7 +20,8 @@ Dabei werden unter anderem folgende Attribute berücksichtigt:
 Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktionsmöglichkeiten. Interaktionsmöglichkeiten müssten zusätzlich implementiert werden.
 
 ## Einschränkungen
-⚠️ **Hinweis:** Das Skript funktioniert nur, wenn es von einem Server aus geladen wird.
+- das HTML muss vom Browser gerendert sein, ein display:none; funktioniert nicht
+- ⚠️ **Hinweis:** Das Skript funktioniert nur, wenn es von einem Server aus geladen wird.
 
 ## Änderungen in Version 2
 - Code-Optimierung
@@ -47,8 +48,8 @@ Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktion
 			htmltocanvas({
 			"canvas":document.getElementById("zielcanvas"),
 			"quelle":document.getElementById("quellhtml")
-			//,"autosize":true
-			//,"autoscale":true
+			//,"autosize":true  //canvas auf nächste passende Textur-Größe setzen (64,128,256,512,1024,2048)
+			//,"autoscale":true //Zeichnung auf volle canvas-Größe scalieren
 			});
 		}
 
