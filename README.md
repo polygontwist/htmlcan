@@ -3,7 +3,7 @@
 HTML-Knoten auf canva-Element rendern, z. B. für WebGL-Texturen.
 
 ## Vorschau
-Beispiel: oben auf graues canva-Element gerendert, darunter das HTML
+Beispiel (Chrome/Firefox): oben auf graues canva-Element gerendert, darunter das HTML
 
 ![Vergleich Canvas vs. HTML](https://github.com/polygontwist/htmlcan/blob/main/screenshot.png)
 
