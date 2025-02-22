@@ -1,90 +1,228 @@
 "use strict";
 
-import { drawRoundRect } from './basic.js';
+
+const drawRoundRect=function(ctx,x,y,b,h,r){
+	ctx.beginPath();
+	ctx.arc(x+r, 	y+r, r, 1 * Math.PI, 1.5 * Math.PI);//links oben		
+	ctx.arc(x+b-r, 	y+r, r, 1.5* Math.PI, 2 * Math.PI);//rechts oben
+	ctx.arc(x+b-r, 	y+h-r, r, 0, 0.5 * Math.PI);//rechts unten
+	ctx.arc(x+r, 	y+h-r, r, 0.5* Math.PI, 1 * Math.PI);//links unten
+	
+	ctx.closePath();
+}
+const getAbsolutePosition=function(childElement, parentElement){
+    // Position des Eltern-Elements
+    const parentRect = parentElement.getBoundingClientRect();
+    
+    // Position des Kind-Elements (relativ zum Viewport)
+    const childRect = childElement.getBoundingClientRect();
+
+    // Berechnung der Position des Kind-Elements relativ zum Eltern-Element
+    const absolutePosition = {
+        x: childRect.left - parentRect.left,
+        y: childRect.top - parentRect.top
+    };
+
+    return absolutePosition;
+}
+
+const drawcross=function(ctx,x,y,bh,farbe){
+	ctx.strokeStyle=farbe;
+	ctx.lineWidth =1;
+	ctx.beginPath();
+	ctx.moveTo(x-bh*0.5,y);
+	ctx.lineTo(x+bh*0.5,y);
+	ctx.stroke();
+	
+	ctx.beginPath();
+	ctx.moveTo(x,y-bh*0.5);
+	ctx.lineTo(x,y+bh*0.5);
+	ctx.stroke();
+}
 
 const htmltocanvas=function(optionen){
-	const meinHTML=optionen.quelle,
+	var meinHTML=optionen.quelle,
 		canvas=optionen.canvas,
 		ctx = canvas.getContext('2d'),
-		
-		inputcolor="#0075ff";
-		
+		qscale=1,
+		inputcolor="#0075ff",
+		i;
+	if(optionen["scale"])qscale=optionen["scale"];
+
+	//clonen geht nicht, weilnicht gerendet
+
+	var b=meinHTML.offsetWidth,
+		h=meinHTML.offsetHeight
+		;
+
+
+	//canvas auf optimale größe setzen
+	var validewerte=[64,128,256,512,1024,2048];
+	if(optionen["autosize"]===true){//textur wird bei automatischer größe nicht aktualisiert :/
+		canvas.width=validewerte.find(value => value >= b);
+		canvas.height=validewerte.find(value => value >= h);
+	}
+	
 	ctx.fillStyle = "#aaaabb";
 	ctx.fillRect(0, 0, canvas.width,  canvas.height);
+	ctx.save();
 
 	
+	const scaleX = canvas.width / b;
+	const scaleY = canvas.height / h;
+	if(optionen["autoscale"]===true)
+		ctx.scale(scaleX, scaleY);
+	
+	//ctx.scale(2, 2);
+	
+	//console.log("html:",b,h,"canvas:",canvas.width,  canvas.height,"scale:", scaleX, scaleY);
+	
+	var manupulatetlist=[];
 	
 	const drawHTMLElement=function(node,data){
-		var pstart,pend,i,t,t2,cnode,worte,wort,cstyle,
-			b,h,size,spacer,
-			lineheight,maxb,tmp,out,zeile,
-			offsetXbreite,
-			
-			x=node.offsetLeft,
-			y=node.offsetTop,
+		var pstart,pend,i,iz,t,t2,cnode,worte,preworte,wort,cstyle,
+			b,h,size,spacer,zhdiff,
+			lineheight,maxb,tmp,out,arr,
+			offsetXbreite,reinfo,
 			
 			ctx=data.ctx,
-			styles=window.getComputedStyle(node);
-			;
-			//position: "relative" position:"static"
+			styles=window.getComputedStyle(node),
 			
-		if(data["tiefe"]==undefined)data["tiefe"]=0;
-		if(data["diff"]==undefined)data["diff"]=0;
-		x-=data["px"];
-		y-=data["py"];
+			padding={l:0,t:0,r:0,b:0},
+			zielsize={w:0,h:0},
+			outx,outy,
+			xx=0,yy=0
+			;
 		
-		if(node.style.position===""){}
-		if(node.style.position==="relative"){
-			data["px"]=0;
-			data["py"]=0;
-		}
-		if(node.style.position==="absolute"){
-			data["px"]=0;
-			data["py"]=0;
-		}
-		
-	
-		
-		styles = window.getComputedStyle(node);
+		var nodepos=getAbsolutePosition(node,meinHTML);	
+			
 		offsetXbreite=parseInt(styles.paddingLeft)+parseInt(styles.paddingRight);
 		lineheight=parseInt(styles.fontSize);//+size.actualBoundingBoxDescent;
 		b=node.offsetWidth;
 		h=node.offsetHeight;
 		ctx.fillStyle = styles.backgroundColor;
-		
+
 		
 		if(styles["borderRadius"]!=undefined){
 			tmp=styles.borderRadius;
 			if(tmp.indexOf(' ')<0){//nur ein Wert für alle Ecken!
 				var bradius=parseInt(tmp);
 				if(bradius>0){
-					//ctx.translate(x, y);
-					//drawRoundFilledRect(ctx,b,h,bradius,ctx.fillStyle);
-					//ctx.resetTransform();
 					ctx.fillStyle = ctx.fillStyle;
-					drawRoundRect(ctx,x,y,b,h,bradius);
+					drawRoundRect(ctx,nodepos.x,nodepos.y,b,h,bradius);
 					ctx.fill();
-					/*
-					ctx.lineWidth = 2;
-					ctx.strokeStyle = "#ffffff";
-					//drawRoundRect(ctx,x,y,b,h,bradius);
-					//drawRoundRect(ctx,0,0,50,50,10);
-					ctx.stroke();
-					*/
-					
 				}
 				else{
-					ctx.fillRect(x,y, b,h);
+					ctx.fillRect(nodepos.x,nodepos.y, b,h);
 				}
 			}
 		}		
 		
-		maxb=b-parseInt(styles.paddingLeft);//offsetXbreite;
 		
-		var xx=parseInt(styles.paddingLeft),yy=parseInt(styles.paddingTop);
-		for(i=0;i<node.childNodes.length;i++){			//tiefe+1
+		//Element
+		padding.l=parseInt(styles.paddingLeft);
+		padding.t=parseInt(styles.paddingTop);
+		padding.r=parseInt(styles.paddingRight);
+		padding.b=parseInt(styles.paddingBottom);
+		
+		maxb=b-padding.l-padding.r;//offsetXbreite;
+		
+		zielsize.w=b-padding.l-padding.r;
+		zielsize.h=h-padding.t-padding.b;
+		
+		//start
+		xx=nodepos.x;
+		yy=nodepos.y;
+		var startX=xx;
+		var starty=yy;
+		outx=xx;
+		outy=yy;
+		
+		var childnodelist=node.childNodes;
+		
+		var beforeStyle,beforecontent,textinhalt,prop;
+		//check auf before-Elemente ->lösche diese und ersetzt duch span-element
+		//funktioniert, aber ändert DOM !
+		
+		beforeStyle = window.getComputedStyle(node, "::before");
+		beforecontent=beforeStyle.getPropertyValue("content")
+		textinhalt=beforecontent.split('"').join('');
+		
+		for(i=0;i<node.childNodes.length;i++){
 			cnode=node.childNodes[i];
 			
+			if(cnode.nodeName!=="#text" && cnode.nodeName!="IMG"){
+				beforeStyle = window.getComputedStyle(cnode, "::before");
+				beforecontent=beforeStyle.getPropertyValue("content")
+				textinhalt=beforecontent.split('"').join('');
+				
+				
+				if(textinhalt!="none" && textinhalt!="-moz-alt-content"){
+					
+					var tempnode=document.createElement("span");
+					tempnode.innerHTML=textinhalt;
+
+					tempnode.style.cssText = `
+						display: ${beforeStyle.display};
+						
+						font-family: ${beforeStyle.fontFamily};
+						font-style: ${beforeStyle.fontStyle};
+						font-weight: ${beforeStyle.fontWeight};
+						font-variant: ${beforeStyle.fontVariant};
+						text-transform: ${beforeStyle.textTransform};
+						line-height: ${beforeStyle.lineHeight};
+						
+						color: ${beforeStyle.color};
+						font-size: ${beforeStyle.fontSize};
+						text-align: ${beforeStyle.textAlign};
+						
+						position: ${beforeStyle.position};
+						top: ${beforeStyle.top};
+						left: ${beforeStyle.left};
+						right: ${beforeStyle.right};
+						bottom: ${beforeStyle.bottom};
+						background: ${beforeStyle.background};
+						margin: ${beforeStyle.margin};
+						padding: ${beforeStyle.padding};
+					`;
+					
+					//tempnode.userDataStyElmt=true;
+					
+					cnode.insertBefore(tempnode,cnode.firstChild);
+					
+					var deletetClasses="";
+					document.querySelectorAll('*').forEach(cnode => {
+						const computedStyle = getComputedStyle(cnode, '::before');
+
+						if (computedStyle.content && computedStyle.content !== 'none') {
+							cnode.classList.forEach(className => {
+								cnode.classList.remove(className);
+								deletetClasses+=className+' ';
+							});
+						}
+					});
+					
+					manupulatetlist.push({"node":cnode,"deletetClasses":deletetClasses,"added":tempnode})
+				}
+			}
+		}
+		
+		
+//console.log(childnodelist);		
+		//
+		for(i=0;i<childnodelist.length;i++){
+			cnode=childnodelist[i];
+			
+			if(cnode.nodeName==="BR"){//umbruch
+				zhdiff=ctx.measureText("test").fontBoundingBoxDescent;
+				
+				nodepos=getAbsolutePosition(cnode.parentElement,meinHTML);
+				xx=nodepos.x;
+				yy+=lineheight+zhdiff;
+			}
+			
+//console.log("%c"+cnode.nodeName,"color:#999");
+		
 			if(cnode.nodeName==="INPUT"){
 				cstyle=window.getComputedStyle(cnode);
 				
@@ -112,7 +250,7 @@ const htmltocanvas=function(optionen){
 					ctx.closePath(); 
 					ctx.fill();
 					ctx.stroke();
-//console.log(node.childNodes);					
+					
 					if(cnode.checked){
 						ctx.fillStyle = inputcolor;
 						ctx.beginPath();
@@ -210,36 +348,49 @@ const htmltocanvas=function(optionen){
 					
 					ctx.fillStyle = styles.color;
 					ctx.font = styles.font;
-					//size = ctx.measureText("1/n123");
-					//console.log(size.actualBoundingBoxDescent);
-					worte=cnode.data.split(' ');
 					
-					//bei "-" wird auch getrennt
-					var listeneu=[],tmplist;
-					for(t=0;t<worte.length;t++){
-						if(worte[t].indexOf('-')>-1){
-							tmplist=worte[t].split('-');
-							for(t2=0;t2<tmplist.length;t2++){
-								if(tmplist[t2]!=""){
-									if(t2<tmplist.length-1)
-										listeneu.push(tmplist[t2]+'-');
-									else
-										listeneu.push(tmplist[t2]);
+					//einzelne Worte
+					preworte=cnode.data;
+					preworte=preworte.split('\n').join('');
+					preworte=preworte.split('\t').join('');
+					preworte=preworte.split(" ");
+					
+					
+					worte=[];
+					for(t=0;t<preworte.length;t++){
+						tmp=preworte[t];
+						if(tmp.indexOf('-')>-1){//Worttrennungen
+							arr=tmp.split(/(?=-)|(?<=-)/);
+							for(t2=0;t2<arr.length;t2++){
+								if(arr[t2]=="-"){
+									worte[worte.length-1]=worte[worte.length-1]+'-';
+								}
+								else{
+									if(arr[t2]!="")
+										worte.push(arr[t2]);
 								}
 							}
 						}
-						else
-							if(worte[t]!="")
-								listeneu.push(worte[t]);
-					}
-					worte=listeneu;
+						else{
+							if(tmp!="")
+								worte.push(tmp);
+						}
+					}	
 					
 					tmp="";
 					out="";
-					zeile=0;
 					
-					var zhdiff=ctx.measureText(worte.join(' ')).actualBoundingBoxDescent
-					
+					zhdiff=ctx.measureText(worte.join(' ')).fontBoundingBoxDescent;
+/*				
+console.log(
+	cnode.nodeName,
+	">> pos:",nodepos.x+','+nodepos.y,
+	"size:",zielsize.w+'x'+zielsize.h,
+	"lineheight:",lineheight,xx,yy);
+	
+console.log("Text:",'"'+cnode.data+'"');
+*/	
+	
 					for(t=0;t<worte.length;t++){
 						wort=worte[t];
 						spacer=" ";
@@ -247,29 +398,45 @@ const htmltocanvas=function(optionen){
 							spacer='';
 						
 						tmp+=wort+spacer;
-						
 						size = ctx.measureText(tmp);
 						
 						if((size.width+xx)>=maxb || t==worte.length-1){
 							if(t==worte.length-1)out+=''+wort;
+						
+							if(out.length>0){
+
+								size = ctx.measureText(out);
+								
+								outx =xx+padding.l;
+								outy =yy+lineheight+padding.t;								
+								
+								ctx.textAlign = "left";
+								ctx.fillStyle = styles.color;
+								
+								if(styles.textAlign==="center"){
+									outx = xx + b*0.5 -size.width*0.5;
+								}
+								if(styles.textAlign==="right"){
+									outx = xx + b -size.width - padding.r;
+								}
+								
+								//drawcross(ctx,outx,outy,6,styles.color);		
+
+								ctx.fillText(out,outx,outy);
+								
+								//nächste Zeile
+								if(t<worte.length-1){
+									yy+=lineheight+zhdiff;
+									xx=startX;
+								}
+							}
 							
-							size = ctx.measureText(out);
-							
-							ctx.fillStyle = styles.color;
-							ctx.fillText(out, 
-								xx+x,
-								yy+y+lineheight
-								);
-							
-							zeile++;
-							yy+=lineheight+zhdiff;
 							out="";
 							tmp=wort+spacer;						
-							
-							xx=parseInt(styles.paddingLeft);
 						}						
-						out+=wort+spacer;						
+						out+=wort+spacer;
 					}
+				
 				}				
 			}
 			else{
@@ -277,31 +444,33 @@ const htmltocanvas=function(optionen){
 			}
 			
 			if(cnode.childNodes.length>0){
-				size = ctx.measureText(" ");
-				data.tiefe++;
-				var reinfo=drawHTMLElement(cnode,
-					{"tiefe":data.tiefe
-					,"ctx":ctx
-					,"px":data["px"]
-					,"py":data["py"]//+4
-					,"diff":size.width
-					});
-				
-				//xx=data["px"]+reinfo.width+reinfo.x-size.width;
-				xx=data["px"]+reinfo.width+reinfo.x-size.width*1+parseInt(styles.paddingLeft)*1;
-				yy-=lineheight+zhdiff;
-				
-				data.tiefe--;
+				reinfo=drawHTMLElement(cnode,{"ctx":ctx});
+//console.log(reinfo);
+				xx=reinfo.x+reinfo.width;
+				//yy=reinfo.y;//-reinfo.height-reinfo.zdiff;//bleibt
+
 			}
 			
 		}//i
 		
-		return {"width":b,"height":h,"x":x,"y":y,"diff":0}
+		return {"width":b,"height":h,"x":outx,"y":outy}
 	}
 
-	//console.log(meinHTML.offsetLeft,meinHTML.offsetTop);
-	drawHTMLElement(meinHTML,{"tiefe":0,"ctx":ctx, "px":meinHTML.offsetLeft,"py":meinHTML.offsetTop});
+	drawHTMLElement(meinHTML,{"ctx":ctx});
 	
+	
+	//DOM-Manipulationen (before) rückgängig machen
+	//manupulatetlist.push({"node":cnode,"deletetClasses":deletetClasses,"added":tempnode})
+	var o;
+	//console.log(manupulatetlist);
+	for(i=0;i<manupulatetlist.length;i++){
+		o=manupulatetlist[i];
+		o.node.className+=o.deletetClasses;
+		o.added.remove();
+	}
+	
+	
+	ctx.restore();
 }
 
 export{htmltocanvas}

@@ -6,10 +6,13 @@
 	
 	<title>htmltocan</title>	
 	
+	<link rel="stylesheet" href="font/style.css">
+    
 	<style>	
 	body{
 		font-family:Verdana;
 		font-size:11px;
+		background-color:#4f4f4f;
 	}
 	#quellhtml{
 		text-align:left;
@@ -23,6 +26,11 @@
 	}	
 	h1{background-color:rgba(255,255,128,0.2)}
 	imput{border-color:#000000;}
+	
+	.icon-smile:before{
+		color:#b53939;
+	}
+	
 	</style>
 	
 	<script type="module">
@@ -32,6 +40,8 @@
 			htmltocanvas({
 			"canvas":document.getElementById("zielcanvas"),
 			"quelle":document.getElementById("quellhtml")
+			//,"autosize":true
+			//,"autoscale":true
 			});
 		}
 		
@@ -42,14 +52,14 @@
 		const setup=function(){
 			drawing();
 			var node=document.getElementById("rb1");
-			node.addEventListener("change",changeInput);
+			if(node)node.addEventListener("change",changeInput);
 			node=document.getElementById("rb2");
-			node.addEventListener("change",changeInput);
+			if(node)node.addEventListener("change",changeInput);
 			node=document.getElementById("rb3");
-			node.addEventListener("change",changeInput);
+			if(node)node.addEventListener("change",changeInput);
 			node=document.getElementById("inptxt");
-			node.addEventListener("keyup",changeInput);
-			node.addEventListener("change",changeInput);
+			if(node)node.addEventListener("keyup",changeInput);
+			if(node)node.addEventListener("change",changeInput);
 		}
 
 		window.addEventListener('load',function(e){setup()});
@@ -64,27 +74,34 @@
 
 <!-- transform:scale(0)-->
 <div id="quellhtml" style="width:555px;position:relative">
-<h1>Test 1</h1>
-<p>Um HTML auf einen Canvas zu rendern, gibt es mehrere Möglichkeiten:</p>
+	<h1 style="text-align:center;padding:10px">Test 1</h1>
+	<p style="text-align:right">Um HTML auf einen Canvas zu rendern, gibt es mehrere Möglichkeiten:</p>
+	
+	<p style="width:50%">drawImage() Methode: Sie<br>können die drawImage()-Methode des Canvas-Elements verwenden, 
+	um ein HTML-Element auf den Canvas zu rendern.</p>
+	<p>toDataURL() Methode: Eine <b>weitere</b> Möglichkeit besteht darin, das HTML-Element in ein Bild zu konvertieren und dann die toDataURL()-Methode des Canvas-Elements zu verwenden, um das Bild auf den Canvas zu rendern. Beispiel:</p>
+	
+	<img src="fischsw1.png" width="50">
 
-<p style="width:50%">drawImage() Methode: Sie<br>können die drawImage()-Methode des Canvas-Elements verwenden, um ein HTML-Element auf den Canvas zu rendern.</p>
-<p>toDataURL() Methode: Eine <b>weitere</b> Möglichkeit besteht darin, das HTML-Element in ein Bild zu konvertieren und dann die toDataURL()-Methode des Canvas-Elements zu verwenden, um das Bild auf den Canvas zu rendern. Beispiel:</p>
-
-<img src="fischsw1.png" width="50">
 	<div style="position:absolute;background-color:#990099;right:50px;top:100px;color:#fff;padding:10px;border-radius: 10px;">1234</div>
-
-<input type="text" value="Input" id="inptxt"> 
-<input type="checkbox" value="Input"  name="r1" id="rb3">
-<input type="radio" value="Input" checked="1" name="r1" id="rb1"> <label for="rb1" style="color:#000">1234</label>
-<input type="radio" value="Input" name="r1" id="rb2"> <label for="rb2" style="color:#000">1234</label>
-
-<p>toDataURL() Methode: Eine weitere Möglichkeit besteht darin, das HTML-Element in ein Bild zu konvertieren und dann die toDataURL()-Methode des Canvas-Elements zu verwenden, um das Bild auf den Canvas zu rendern. 
-<b>Beispiel  1234</b> fubar</p>
+	
+	<div style="position:absolute;right:150px;top:100px;color:#000;font-size:16pt">
+		1<span class="icon-smile"></span>2
+	</div>
+	
+	
+	<input type="text" value="Input" id="inptxt"> 
+	<input type="checkbox" value="Input"  name="r1" id="rb3">
+	<input type="radio" value="Input" checked="1" name="r1" id="rb1"> <label for="rb1" style="color:#000">1234</label>
+	<input type="radio" value="Input" name="r1" id="rb2"> <label for="rb2" style="color:#000">1234</label>
+	
+	<p>toDataURL() Methode: Eine weitere Möglichkeit besteht darin, 
+	das HTML-Element in ein Bild zu konvertieren und dann die toDataURL()-Methode des Canvas-Elements zu verwenden, um das Bild auf den Canvas zu rendern. 
+	<b>Beispiel 1234</b> fubar</p>
 
 	<p>1.Zeile wer <b style="background-color:#990000;color:#ffff22">fett</b> 1234<br>wer.</p>
 	
 </div>
-
 
 
 </body>

@@ -1,14 +1,66 @@
-# htmlcan (html to canvas)
-HTML-Knoten auf canvas für WebGL-Textur rendern
+# htmlcan (HTML to Canvas)
 
-Beispiel oben Canvas unten HTML:
+HTML-Knoten auf canva-Element rendern, z. B. für WebGL-Texturen.
 
-<img src="https://github.com/polygontwist/htmlcan/blob/main/screenshot.jpg" width="356" alt="Vergleich Canvas vs. HTML">
+## Vorschau
+Beispiel: Oben Canvas, unten HTML
 
-Im Prinzip hole ich mir die Position, Größe, Hintergrundfarbe, Textfarbe+Font, Eckenabrundung der Elemente; dazu Bilder - und rendere das in ein canvas-Element.
+![Vergleich Canvas vs. HTML](https://github.com/polygontwist/htmlcan/blob/main/screenshot.png)
 
-Klassische input-Elemente werden auch gezeichnet. Es findet aber keine Interaktion mit diesen statt. Dies müßte ergänzt werden.
+## Funktionsweise
+Das Skript analysiert HTML-Elemente und überträgt deren Stileigenschaften auf ein Canvas-Element. 
+Dabei werden unter anderem folgende Attribute berücksichtigt:
 
-Beim genauen Hinschaun ist es noch nicht perfekt, z.B. wenn fetter Text in normalen Text steht. Für einen Anfang sollte es genügen.
+- Position und Größe
+- Hintergrundfarbe
+- Textfarbe und Schriftart
+- Eckenabrundung
+- Bilder
 
-Das ganze funktioniert nur wenn es von einem Server kommt.
+Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktionsmöglichkeiten. Interaktionsmöglichkeiten müssten zusätzlich implementiert werden.
+
+## Einschränkungen
+⚠️ **Hinweis:** Das Skript funktioniert nur, wenn es von einem Server aus geladen wird.
+
+## Änderungen in Version 2
+- Code-Optimierung
+- Unterstützung für `padding`
+- Unterstützung für Elemente mit `:before`, z. B. Font-Icons
+
+## Schriftart-Quelle
+- **URL:** [IcoMoon](https://icomoon.io/#icons-icomoon)
+- **Designer:** Keyamoon
+- **Lizenz:** GPL oder CC BY 4.0
+
+---
+
+### Installation & Nutzung
+1. Stelle sicher, dass das Skript über einen Server bereitgestellt wird.
+2. Binde das Skript in deine HTML-Datei ein.
+3. Rufe die `htmlcan`-Funktion mit dem gewünschten HTML-Element nach dem laden auf.
+
+```js
+	<script type="module">
+		import { htmltocanvas } from './script.js';	
+
+		const setup=function(){
+			htmltocanvas({
+			"canvas":document.getElementById("zielcanvas"),
+			"quelle":document.getElementById("quellhtml")
+			//,"autosize":true
+			//,"autoscale":true
+			});
+		}
+
+		window.addEventListener('load',function(e){setup()});
+		
+	</script>
+```
+
+## Lizenz
+Dieses Projekt steht unter der **MIT-Lizenz**. Siehe die Datei `LICENSE` für weitere Informationen.
+
+---
+
+_Feedback und Beiträge sind willkommen!_ 🚀
+
