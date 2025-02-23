@@ -40,6 +40,137 @@ const drawcross=function(ctx,x,y,bh,farbe){
 	ctx.stroke();
 }
 
+
+const drawFilledRoundedRect=function(ctx, x, y, width, height, radii, color) {
+ 	ctx.beginPath();
+    ctx.moveTo(x + radii[0], y);
+    ctx.lineTo(x + width - radii[1], y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radii[1]);
+    ctx.lineTo(x + width, y + height - radii[2]);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radii[2], y + height);
+    ctx.lineTo(x + radii[3], y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radii[3]);
+    ctx.lineTo(x, y + radii[0]);
+    ctx.quadraticCurveTo(x, y, x + radii[0], y);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+const drawArc=function(ctx, centerX, centerY, radius, startAngle, endAngle) {
+ 	// Grad in Bogenmaß umrechnen
+    const startRad = (startAngle - 90) * (Math.PI / 180);
+    const endRad = (endAngle - 90) * (Math.PI / 180);
+    ctx.arc(centerX, centerY, radius, startRad, endRad);
+ }
+
+const drawRoundedRectLines=function(ctx, x, y, width, height, radii, colors, sizes) {
+
+	ctx.lineJoin = "round";	
+	
+	//oben
+	ctx.lineWidth=sizes[0];
+    ctx.strokeStyle = colors[0];
+	ctx.beginPath();
+	if(radii[0]>0){
+		drawArc(ctx,x+radii[0],y+radii[0], radii[0],315,360);
+	}	
+	ctx.moveTo(x + radii[0], y);
+    ctx.lineTo(x + width - radii[1], y);
+	if(radii[1]>0){
+		drawArc(ctx,x+width-radii[1],y+radii[1], radii[1],0,45);
+	}	
+	ctx.stroke();
+    
+	//rechts
+	ctx.lineWidth=sizes[1];
+    ctx.strokeStyle = colors[1];
+	ctx.beginPath();
+	if(radii[1]>0){
+		drawArc(ctx,x+width-radii[1],y+radii[1], radii[1],45,90);
+	}	
+    ctx.moveTo(x + width, y + radii[1]);
+    ctx.lineTo(x + width, y + height - radii[2]);
+	if(radii[2]>0){
+		drawArc(ctx,x+width-radii[2],y+height-radii[2], radii[2],90,135);
+	}	
+    ctx.stroke();
+    
+	//unten
+	ctx.lineWidth=sizes[2];
+    ctx.strokeStyle = colors[2];
+    ctx.beginPath();
+	if(radii[2]>0){
+		drawArc(ctx,x+width-radii[2],y+height-radii[2], radii[2],135,180);
+	}		
+    ctx.moveTo(x + width - radii[2], y + height);
+    ctx.lineTo(x + radii[3] , y + height);
+ 	if(radii[3]>0){
+		drawArc(ctx,x+radii[3],y+height-radii[3], radii[3],180,225);
+	}		
+	ctx.stroke();
+    
+	//links
+	ctx.lineWidth=sizes[3];
+    ctx.strokeStyle = colors[3];
+    ctx.beginPath();
+ 	if(radii[3]>0){
+		drawArc(ctx,x+radii[3],y+height-radii[3], radii[3],225,270);
+	}		
+    ctx.moveTo(x, y + height - radii[3] );
+    ctx.lineTo(x, y + radii[0] );
+	if(radii[0]>0){
+		drawArc(ctx,x+radii[0],y+radii[0], radii[0],270,360-45);
+	}	
+   ctx.stroke();
+}
+
+const drawBGBox=function(ctx,x,y,b,h ,styles ,node){			
+	var r1=parseInt(styles.borderTopLeftRadius);
+	var r2=parseInt(styles.borderTopRightRadius);
+	var r3=parseInt(styles.borderBottomRightRadius);
+	var r4=parseInt(styles.borderBottomLeftRadius);
+	
+	var w1=parseInt(styles.borderTopWidth);
+	var w2=parseInt(styles.borderRightWidth);
+	var w3=parseInt(styles.borderBottomWidth);
+	var w4=parseInt(styles.borderLeftWidth);
+	
+	var c1=styles.borderTopColor;
+	var c2=styles.borderRightColor;
+	var c3=styles.borderBottomColor;
+	var c4=styles.borderLeftColor;
+	
+	ctx.fillStyle = styles.backgroundColor;
+	
+	if(styles.borderTopLeftRadius.indexOf('px')<0)r1=0;
+	if(styles.borderTopRightRadius.indexOf('px')<0)r2=0;
+	if(styles.borderBottomRightRadius.indexOf('px')<0)r3=0;
+	if(styles.borderBottomLeftRadius.indexOf('px')<0)r4=0;
+	
+	if(styles.borderTopWidth.indexOf('px')<0)w1=0;
+	if(styles.borderRightWidth.indexOf('px')<0)w2=0;
+	if(styles.borderLeftWidth.indexOf('px')<0)w3=0;
+	if(styles.borderBottomWidth.indexOf('px')<0)w4=0;
+	
+	if(r1 > 0|| r2 >0 || r3 >0 || r4 >0 ){
+		//hat rundungen
+		drawFilledRoundedRect(ctx,x,y,b,h,[r1,r2,r3,r4],styles.backgroundColor);
+	}
+	else{
+		//keine rundungen
+		ctx.fillRect(x,y, b,h);		
+	}
+	
+	if(	(w1>0 || w2>0 || w3>0 || w4>0) 
+	){
+		//border
+		drawRoundedRectLines(ctx,x,y,b,h,[r1,r2,r3,r4],[c1,c2,c3,c4],[w1,w2,w3,w4]);
+	}		
+}
+			
+
+
 const htmltocanvas=function(optionen){
 	var meinHTML=optionen.quelle,
 		canvas=optionen.canvas,
@@ -103,19 +234,8 @@ const htmltocanvas=function(optionen){
 		ctx.fillStyle = styles.backgroundColor;
 
 		
-		if(styles["borderRadius"]!=undefined){
-			tmp=styles.borderRadius;
-			if(tmp.indexOf(' ')<0){//nur ein Wert für alle Ecken!
-				var bradius=parseInt(tmp);
-				if(bradius>0){
-					ctx.fillStyle = ctx.fillStyle;
-					drawRoundRect(ctx,nodepos.x,nodepos.y,b,h,bradius);
-					ctx.fill();
-				}
-				else{
-					ctx.fillRect(nodepos.x,nodepos.y, b,h);
-				}
-			}
+		if(styles["borderColor"]!=undefined){
+			drawBGBox(ctx,nodepos.x,nodepos.y,b,h ,styles,node);
 		}		
 		
 		
@@ -155,7 +275,6 @@ const htmltocanvas=function(optionen){
 				beforeStyle = window.getComputedStyle(cnode, "::before");
 				beforecontent=beforeStyle.getPropertyValue("content")
 				textinhalt=beforecontent.split('"').join('');
-				
 				
 				if(textinhalt!="none" && textinhalt!="-moz-alt-content"){
 					
@@ -223,9 +342,11 @@ const htmltocanvas=function(optionen){
 			
 //console.log("%c"+cnode.nodeName,"color:#999");
 		
+			if(cnode.nodeName!=="#text")
+				cstyle=window.getComputedStyle(cnode);
+		
 			if(cnode.nodeName==="INPUT"){
 				cstyle=window.getComputedStyle(cnode);
-				
 				
 				ctx.fillStyle =cstyle.lightingColor;// "#ffffff";
 
@@ -313,9 +434,6 @@ const htmltocanvas=function(optionen){
 				//console.log(inptextsize);
 				//console.log(">>",cnode.type,cnode.value);
 				if(cnode.type=="text"){
-					//console.log(cstyle);
-					
-					
 					ctx.fillStyle = cstyle.color;
 					ctx.font = cstyle.font;
 					ctx.fillText(cnode.value, 
@@ -440,7 +558,8 @@ console.log("Text:",'"'+cnode.data+'"');
 				}				
 			}
 			else{
-				//console.log(cnode.nodeName);
+				//console.log(cnode.nodeName,cstyle);
+				
 			}
 			
 			if(cnode.childNodes.length>0){
@@ -448,7 +567,6 @@ console.log("Text:",'"'+cnode.data+'"');
 //console.log(reinfo);
 				xx=reinfo.x+reinfo.width;
 				//yy=reinfo.y;//-reinfo.height-reinfo.zdiff;//bleibt
-
 			}
 			
 		}//i

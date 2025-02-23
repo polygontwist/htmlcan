@@ -29,6 +29,9 @@ Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktion
 - Unterstützung für `padding`
 - Unterstützung für Elemente mit `:before`, z. B. Font-Icons
 
+## Änderungen in Version 3
+- Unterstützung für border inkl. border-radius, Farbe und Dicke
+
 ## Schriftart-Quelle
 - **URL:** [IcoMoon](https://icomoon.io/#icons-icomoon)
 - **Designer:** Keyamoon

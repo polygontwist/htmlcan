@@ -9,6 +9,10 @@
 	<link rel="stylesheet" href="font/style.css">
     
 	<style>	
+	*, body{
+	  box-sizing: border-box;	
+	}
+	
 	body{
 		font-family:Verdana;
 		font-size:11px;
@@ -23,8 +27,26 @@
 		background-color:#222222;
 		color:#fff;
 		padding:5px;
+		margin-top:3px;
+		margin-bottom:3px;
 	}	
-	h1{background-color:rgba(255,255,128,0.2)}
+	h1{
+		background-color:rgb(32 59 41 / 20%);
+		position:relative;
+		top:4px;
+		left:2px;
+		width:calc(100% - 5px);
+		
+		text-align:center;
+		padding:10px;
+		border: 2px solid red;
+		border-radius:30px 15px 30px 0;
+		border-top-color:#27c686;
+		border-bottom-color:#000;
+		border-bottom-width:5px;
+		margin-top:10px;
+		margin-bottom:10px;
+	}
 	imput{border-color:#000000;}
 	
 	.icon-smile:before{
@@ -72,10 +94,12 @@
 <body id="thebody">
 <canvas id="zielcanvas" width="700" height="400"></canvas>
 
-<!-- transform:scale(0)-->
+<!-- transform:scale(0)
+border: 2px solid green;
+-->
 <div id="quellhtml" style="width:555px;position:relative">
-	<h1 style="text-align:center;padding:10px">Test 1</h1>
-	<p style="text-align:right">Um HTML auf einen Canvas zu rendern, gibt es mehrere Möglichkeiten:</p>
+	<h1>Test 1</h1>
+	<p style="text-align:right;">Um HTML auf einen Canvas zu rendern, gibt es mehrere Möglichkeiten:</p>
 	
 	<p style="width:50%">drawImage() Methode: Sie<br>können die drawImage()-Methode des Canvas-Elements verwenden, 
 	um ein HTML-Element auf den Canvas zu rendern.</p>
