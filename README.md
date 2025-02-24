@@ -35,6 +35,7 @@ Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktion
 ## Änderungen in Version 4
 - Korrekturen
 - Modus zum erstellen einer Alphamap
+- Rückgabe der Klickbereiche (A-Tags + A-Knoten)
 
 ## Schriftart-Quelle
 - **URL:** [IcoMoon](https://icomoon.io/#icons-icomoon)
