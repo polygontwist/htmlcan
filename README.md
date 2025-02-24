@@ -32,6 +32,10 @@ Auch klassische `<input>`-Elemente werden gerendert, allerdings ohne Interaktion
 ## Änderungen in Version 3
 - Unterstützung für border inkl. border-radius, Farbe und Dicke
 
+## Änderungen in Version 4
+- Korrekturen
+- Modus zum erstellen einer Alphamap
+
 ## Schriftart-Quelle
 - **URL:** [IcoMoon](https://icomoon.io/#icons-icomoon)
 - **Designer:** Keyamoon
