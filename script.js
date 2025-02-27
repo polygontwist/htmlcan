@@ -559,12 +559,15 @@ console.log("Text:",'"'+cnode.data+'"');
 							spacer='';
 						
 						tmp+=wort+spacer;
-						size = ctx.measureText(tmp);
+						size = ctx.measureText(tmp);	//breite der gesammelten Worte + neues Wort
 						
-						if((size.width+xx)>=maxb || t==worte.length-1){
-							if(t==worte.length-1)out+=''+wort;
+						//console.log(t,maxb,size.width,tmp);
 						
-							if(out.length>0){
+						
+						if((size.width+xx)>=maxb || t==worte.length-1){//Breite überschreitet maximale breite, oder rest
+							if(t==worte.length-1)out+=''+wort; //Rest
+						
+							if(out.length>0){//Zeile ausgeben
 
 								size = ctx.measureText(out);
 								
@@ -584,7 +587,7 @@ console.log("Text:",'"'+cnode.data+'"');
 								
 								//drawcross(ctx,outx,outy,6,styles.color);		
 
-								ctx.fillText(out,outx,outy);
+								ctx.fillText(out,outx,outy);//Zeile ausgeben
 								
 								//nächste Zeile
 								if(t<worte.length-1){
@@ -593,10 +596,11 @@ console.log("Text:",'"'+cnode.data+'"');
 								}
 							}
 							
-							out="";
-							tmp=wort+spacer;						
-						}						
-						out+=wort+spacer;
+							out="";			//neue Zeile
+							tmp=wort+spacer;//Messzeile						
+						}
+											
+						out+=wort+spacer;//Zeile Wort hinzufügen & merken
 					}
 				
 				}				
