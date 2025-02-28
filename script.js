@@ -374,7 +374,14 @@ const htmltocanvas=function(optionen){
 			cnode=childnodelist[i];
 			
 			if(cnode.nodeName==="BR"){//umbruch
-				zhdiff=ctx.measureText("test").fontBoundingBoxDescent;
+				zhdiff=0;
+				size = ctx.measureText("test");
+				if(size.fontBoundingBoxDescent!=undefined)
+					zhdiff=size.fontBoundingBoxDescent;
+				else{
+					zhdiff=0;
+					if(size.actualBoundingBoxDescent)zhdiff+=size.actualBoundingBoxDescent;
+				}
 				
 				nodepos=getAbsolutePosition(cnode.parentElement,meinHTML);
 				xx=nodepos.x;
@@ -541,16 +548,14 @@ const htmltocanvas=function(optionen){
 					tmp="";
 					out="";
 					
-					zhdiff=ctx.measureText(worte.join(' ')).fontBoundingBoxDescent;
-/*				
-console.log(
-	cnode.nodeName,
-	">> pos:",nodepos.x+','+nodepos.y,
-	"size:",zielsize.w+'x'+zielsize.h,
-	"lineheight:",lineheight,xx,yy);
-	
-console.log("Text:",'"'+cnode.data+'"');
-*/	
+					size = ctx.measureText(worte.join(' '));
+					if(size.fontBoundingBoxDescent!=undefined)
+						zhdiff=size.fontBoundingBoxDescent;
+					else{
+						zhdiff=0;
+						if(size.actualBoundingBoxDescent)zhdiff+=size.actualBoundingBoxDescent;
+					}
+
 	
 					for(t=0;t<worte.length;t++){
 						wort=worte[t];
@@ -561,9 +566,6 @@ console.log("Text:",'"'+cnode.data+'"');
 						tmp+=wort+spacer;
 						size = ctx.measureText(tmp);	//breite der gesammelten Worte + neues Wort
 						
-						//console.log(t,maxb,size.width,tmp);
-						
-						
 						if((size.width+xx)>=maxb || t==worte.length-1){//Breite überschreitet maximale breite, oder rest
 							if(t==worte.length-1)out+=''+wort; //Rest
 						
@@ -572,7 +574,7 @@ console.log("Text:",'"'+cnode.data+'"');
 								size = ctx.measureText(out);
 								
 								outx =xx+padding.l;
-								outy =yy+lineheight+padding.t;								
+								outy =yy+lineheight+padding.t;					
 								
 								ctx.textAlign = "left";
 								ctx.fillStyle = styles.color;
@@ -599,7 +601,7 @@ console.log("Text:",'"'+cnode.data+'"');
 							out="";			//neue Zeile
 							tmp=wort+spacer;//Messzeile						
 						}
-											
+						
 						out+=wort+spacer;//Zeile Wort hinzufügen & merken
 					}
 				
